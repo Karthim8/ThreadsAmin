@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THREADS'26 | Event Coordinator Portal</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #38bdf8;
+            --glass: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 40%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #60a5fa, #38bdf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        select option {
+            background-color: var(--card-bg);
+            color: white;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-overlay {
+            display: none;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        #error-msg {
+            color: #f87171;
+            font-size: 0.875rem;
+            text-align: center;
+            margin-top: 15px;
+            min-height: 20px;
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card" id="loginCard">
+            <h1>THREADS'26</h1>
+            <p class="subtitle">Event Coordinator Access</p>
+
+            <div class="input-group">
+                <label for="eventSelect">Select Your Event</label>
+                <select id="eventSelect">
+                    <option value="" disabled selected>Choose an event...</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+
+            <button class="login-btn" onclick="login()">
+                <span id="btnText">Secure Login</span>
+                <div class="loader" id="loader"></div>
+            </button>
+
+            <div id="error-msg"></div>
+        </div>
+
+        <div class="card success-overlay" id="successCard">
+            <div class="success-icon">✓</div>
+            <h2>Verification Successful</h2>
+            <p id="welcomeMsg" style="margin: 15px 0 25px; color: var(--text-dim);"></p>
+            <button class="login-btn" onclick="goToPortal()">Open Portal</button>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://threads26-2-fdem.onrender.com';
+        const API_KEY = '7f8e3a1b9c4d2e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f';
+
+        const EVENT_COORDINATORS = [
+            { eventId: 2, username: "event2", password: "event2@123", eventName: "Quantum Leap – Understanding Qubits, Gates and Superposition", eventType: "workshop" },
+            { eventId: 3, username: "event3", password: "event3@123", eventName: "Decoding Large Language Models: Theory to Implementation", eventType: "workshop" },
+            { eventId: 4, username: "event4", password: "event4@123", eventName: "Flutter App Development with Firebase Backend", eventType: "workshop" },
+            { eventId: 5, username: "event5", password: "event5@123", eventName: "Introduction to Cybersecurity and Ethical Hacking", eventType: "workshop" },
+            { eventId: 6, username: "event6", password: "event6@123", eventName: "Unity Game Development", eventType: "workshop" },
+            { eventId: 7, username: "event7", password: "event7@123", eventName: "M^2 Model & Metrics", eventType: "technical" },
+            { eventId: 8, username: "event8", password: "event8@123", eventName: "Code Hunt", eventType: "technical" },
+            { eventId: 9, username: "event9", password: "event9@123", eventName: "Pixel Era", eventType: "technical" },
+            { eventId: 10, username: "event10", password: "event10@123", eventName: "Quiz to Quirk", eventType: "technical" },
+            { eventId: 11, username: "event11", password: "event11@123", eventName: "Paper Presentation", eventType: "technical" },
+            { eventId: 12, username: "event12", password: "event12@123", eventName: "Capture The Flag", eventType: "technical" },
+            { eventId: 13, username: "event13", password: "event13@123", eventName: "Treasure Hunt", eventType: "non-technical" },
+            { eventId: 14, username: "event14", password: "event14@123", eventName: "Connections", eventType: "non-technical" },
+            { eventId: 15, username: "event15", password: "event15@123", eventName: "Sherlock Holmes", eventType: "non-technical" },
+            { eventId: 16, username: "event16", password: "event16@123", eventName: "Karaoke", eventType: "non-technical" },
+            { eventId: 17, username: "event17", password: "event17@123", eventName: "Machine Learning Workshop: Foundations & Predictive Modeling", eventType: "workshop" },
+            { eventId: 18, username: "event18", password: "event18@123", eventName: "Trial and War", eventType: "technical" },
+            { eventId: 19, username: "event19", password: "event19@123", eventName: "Cricnomics – The Auction League", eventType: "non-technical" }
+        ];
+
+        // Populate dropdown
+        const select = document.getElementById('eventSelect');
+        EVENT_COORDINATORS.forEach(coord => {
+            const option = document.createElement('option');
+            option.value = coord.eventId;
+            option.textContent = coord.eventName;
+            select.appendChild(option);
+        });
+
+        async function login() {
+            const eventId = parseInt(select.value);
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btnText');
+
+            if (!eventId || !username || !password) {
+                errorMsg.textContent = "Please fill in all fields";
+                return;
+            }
+
+            errorMsg.textContent = "";
+            loader.style.display = "block";
+            btnText.style.display = "none";
+
+            try {
+                const response = await fetch(`${BASE_URL}/event-login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_KEY
+                    },
+                    body: JSON.stringify({ eventId, username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Store credentials and event info
+                    localStorage.setItem('coordinatorToken', 'VERIFIED'); // Mock token since the endpoint returns success:true
+                    localStorage.setItem('currentEventId', data.event.eventId);
+                    localStorage.setItem('currentEventName', data.event.eventName);
+
+                    document.getElementById('loginCard').style.display = 'none';
+                    document.getElementById('successCard').style.display = 'block';
+                    document.getElementById('welcomeMsg').textContent = `Welcome back, Coordinator of ${data.event.eventName}`;
+                } else {
+                    errorMsg.textContent = data.message || "Invalid credentials";
+                }
+            } catch (error) {
+                errorMsg.textContent = "Connection error. Please try again.";
+                console.error(error);
+            } finally {
+                loader.style.display = "none";
+                btnText.style.display = "inline";
+            }
+        }
+
+        function goToPortal() {
+            window.location.href = 'event-attendance-portal.html';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Event Attendance Portal</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .portal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .portal-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-ghost:hover {
+            background: #f1f5f9;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .result-box {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            border-left: 4px solid var(--primary);
+            background: #f1f5f9;
+        }
+
+        .result-box.success {
+            border-left-color: var(--success);
+            background: #ecfdf5;
+        }
+
+        .result-box.error {
+            border-left-color: var(--error);
+            background: #fef2f2;
+        }
+
+        .result-box.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-pending {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="portal" style="max-width: 1100px; margin: 0 auto;">
+        <div class="portal-header">
+            <h1 id="eventTitle">Event Attendance Portal</h1>
+            <button class="btn btn-ghost" onclick="window.close()">Exit Portal</button>
+        </div>
+
+        <div class="stats card">
+            <div class="section-header">
+                <h2>📊 Live Statistics</h2>
+                <div id="lastUpdated" style="font-size: 0.75rem; color: var(--text-dim);"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Total Registered</div>
+                    <div class="stat-value" id="totalRegistered">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Present</div>
+                    <div class="stat-value" id="presentCount" style="color: var(--success);">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Absent</div>
+                    <div class="stat-value" id="absentCount" style="color: var(--error);">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Attendance Rate</div>
+                    <div class="stat-value" id="attendancePercent">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
+            <!-- QR Scanner Section -->
+            <div id="qr-section" class="section active card">
+                <div class="section-header">
+                    <h2>📱 QR Scanner</h2>
+                    <button class="btn btn-ghost" onclick="switchToManual()">⌨️ Manual Entry</button>
+                </div>
+
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px;">
+                    Scan the QR code from the participant's confirmation email.
+                </p>
+
+                <div id="reader"></div>
+
+                <div style="margin-top: 24px; text-align: center; display: flex; justify-content: center; gap: 12px;">
+                    <button class="btn btn-primary" onclick="startScanner()">▶ Start Scanner</button>
+                    <button class="btn btn-ghost" style="color: var(--error); border-color: #fee2e2;"
+                        onclick="stopScanner()">⏹ Stop Scanner</button>
+                </div>
+
+                <div id="scanResult"></div>
+            </div>
+
+            <!-- Manual Attendance Section -->
+            <div id="manual-section" class="section card">
+                <div class="section-header">
+                    <h2>✏️ Manual Entry</h2>
+                    <button class="btn btn-ghost" onclick="switchToQR()">📷 QR Scanner</button>
+                </div>
+
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px;">
+                    Enter the Participant ID to mark attendance manually.
+                </p>
+
+                <div class="input-group">
+                    <label>Participant ID</label>
+                    <input type="text" id="participantIdInput" placeholder="Enter ID (e.g. 1001)"
+                        onkeypress="if(event.key === 'Enter') markManualAttendance()">
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; padding: 14px;" onclick="markManualAttendance()">
+                    Mark Attendance
+                </button>
+
+                <div id="manualResult"></div>
+
+                <div
+                    style="margin-top: 24px; padding: 16px; background: #fffbeb; border-radius: 12px; font-size: 0.875rem; color: #92400e;">
+                    <strong>Pro-tip:</strong> You can quickly mark attendance by typing the ID and hitting
+                    <code>Enter</code>.
+                </div>
+            </div>
+        </div>
+
+        <!-- Registrations Table -->
+        <div class="card" style="margin-top: 32px;">
+            <div class="section-header">
+                <h2>👥 All Registrations</h2>
+                <div style="display:flex; gap: 12px;">
+                    <input id="searchBox" placeholder="Search name, ID, or college..."
+                        style="padding: 10px 16px; width: 300px; border: 1px solid #e2e8f0; border-radius: 8px;"
+                        onkeyup="filterRegistrations()">
+                    <button class="btn btn-ghost" onclick="refreshRegistrations()">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <div id="registrationsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://threads26-2-fdem.onrender.com';
+        const API_KEY = '7f8e3a1b9c4d2e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f';
+        let token = localStorage.getItem('coordinatorToken');
+        let eventId = localStorage.getItem('currentEventId');
+        let eventName = localStorage.getItem('currentEventName');
+
+        let allRegistrations = [];
+        let html5QrCode;
+        let scanning = false;
+
+        /* ---------------- INIT ---------------- */
+        window.onload = () => {
+            if (!token || !eventId) {
+                alert('Login required');
+                window.close();
+                return;
+            }
+            document.getElementById('eventTitle').textContent =
+                `${eventName} - Attendance Portal`;
+            loadEventRegistrations();
+            startScanner();
+
+            // Focus on participant ID input when switching to manual section
+            document.getElementById('participantIdInput').addEventListener('focus', function () {
+                this.select();
+            });
+        };
+
+        /* ---------------- SECTION SWITCHING ---------------- */
+        function switchToManual() {
+            stopScanner();
+            document.getElementById('qr-section').classList.remove('active');
+            document.getElementById('manual-section').classList.add('active');
+            document.getElementById('participantIdInput').focus();
+        }
+
+        function switchToQR() {
+            document.getElementById('manual-section').classList.remove('active');
+            document.getElementById('qr-section').classList.add('active');
+            startScanner();
+        }
+
+        /* ---------------- QR SCANNER ---------------- */
+        function startScanner() {
+            if (scanning) return;
+
+            html5QrCode = new Html5Qrcode("reader");
+            scanning = true;
+
+            // OPTIMIZED: Higher FPS for faster scanning
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 15, qrbox: 300 }, // Increased FPS and scan box
+                onScanSuccess,
+                () => { }
+            ).catch(() => scanning = false);
+        }
+
+        function stopScanner() {
+            if (html5QrCode && scanning) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    scanning = false;
+                });
+            }
+        }
+
+        async function onScanSuccess(decodedText) {
+            stopScanner();
+            const scanDiv = document.getElementById('scanResult');
+            scanDiv.innerHTML = '<div class="result-box">⚡ Processing QR code...</div>';
+
+            try {
+                // Parse QR data
+                const qrData = JSON.parse(decodedText);
+
+                // Handle optimized format {pid:123, ids:"id1|id2|id3"}
+                let registrationIds = [];
+
+                if (qrData.ids) {
+                    // Split pipe-separated IDs
+                    registrationIds = qrData.ids.split('|');
+                    console.log(`Found ${registrationIds.length} registrations in QR`);
+                } else if (qrData.registration_ids) {
+                    // Old array format
+                    registrationIds = qrData.registration_ids;
+                } else {
+                    registrationIds = [decodedText];
+                }
+
+                if (registrationIds.length === 0) {
+                    throw new Error('No registration IDs found');
+                }
+
+                // Filter for current event
+                const validIds = registrationIds.filter(id => {
+                    try {
+                        if (!id.startsWith('THREADS26-')) return false;
+                        const parts = id.split('-');
+                        const extractedEventId = parts[parts.length - 1];
+                        return extractedEventId === String(eventId);
+                    } catch {
+                        return false;
+                    }
+                });
+
+                if (validIds.length === 0) {
+                    scanDiv.innerHTML = '<div class="result-box error">❌ No valid registrations for this event</div>';
+                    setTimeout(startScanner, 1500);
+                    return;
+                }
+
+                // Show multi-registration warning
+                if (validIds.length > 5) {
+                    scanDiv.innerHTML = `<div class="result-box warning">
+                📌 Found ${validIds.length} registrations. Processing first one...
+            </div>`;
+                }
+
+                // Process ONLY the first registration ID for speed
+                const primaryId = validIds[0];
+
+                const res = await fetch(`${BASE_URL}/api/scan-attendance`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_KEY
+                    },
+                    body: JSON.stringify({
+                        registration_id: primaryId,
+                        qr_data: qrData // Send full QR data for reference
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    let resultHtml = `<div class="result-box">
+                ✅ <strong>Attendance Marked!</strong><br>
+                <small>${data.participant?.full_name || 'Participant'}</small><br>
+                <small>${data.message}</small>`;
+
+                    if (validIds.length > 1) {
+                        resultHtml += `<br><small>📌 QR contains ${validIds.length} total registrations</small>`;
+                    }
+
+                    if (data.year_of_study) {
+                        resultHtml += `<br><small>Year: ${data.year_of_study}</small>`;
+                    }
+
+                    resultHtml += `</div>`;
+
+                    scanDiv.innerHTML = resultHtml;
+
+                    // Update registration status in table
+                    const reg = allRegistrations.find(x => x.registration_unique_id === primaryId);
+                    if (reg) {
+                        reg.attendance_status = 'ATTENDED';
+                    }
+                } else {
+                    scanDiv.innerHTML = `<div class="result-box error">
+                ❌ ${data.message || 'Attendance failed'}<br>
+                ${data.details ? `<small>${data.details}</small><br>` : ''}
+                ${data.suggestion ? `<small>💡 ${data.suggestion}</small>` : ''}
+            </div>`;
+                }
+
+            } catch (error) {
+                console.error('Scan error:', error);
+                scanDiv.innerHTML = `<div class="result-box error">
+            ❌ Error: ${error.message}
+        </div>`;
+            }
+
+            updateStats();
+            filterRegistrations();
+
+            // Restart scanner faster
+            setTimeout(() => {
+                scanDiv.innerHTML = '';
+                startScanner();
+            }, 2000);
+        }
+
+        /* ---------------- MANUAL ATTENDANCE ---------------- */
+        async function markManualAttendance() {
+            const participantId = document.getElementById('participantIdInput').value.trim();
+            const resultDiv = document.getElementById('manualResult');
+
+            if (!participantId) {
+                resultDiv.innerHTML = '<div class="result-box error">Please enter Participant ID</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="result-box">Processing...</div>';
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/manual-attendance`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_KEY
+                    },
+                    body: JSON.stringify({
+                        participant_id: participantId,
+                        event_id: eventId
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="result-box">
+                ✅ <strong>Attendance Marked Successfully!</strong><br>
+                <small>Participant ID: ${participantId}</small><br>
+                <small>Name: ${data.participant?.full_name || 'N/A'}</small><br>
+                <small>${data.message}</small>
+            </div>`;
+
+                    // Update registration in our list
+                    const r = allRegistrations.find(x => x.participant_id == participantId && x.event_id == eventId);
+                    if (r) {
+                        r.attendance_status = 'ATTENDED';
+                        r.verification_status = data.payment_info?.admin_verified ? 'Verified' : 'Pending';
+                    }
+
+                    updateStats();
+                    filterRegistrations();
+
+                    // Clear input and focus for next entry
+                    document.getElementById('participantIdInput').value = '';
+                    document.getElementById('participantIdInput').focus();
+
+                } else {
+                    resultDiv.innerHTML = `<div class="result-box error">
+                ❌ <strong>Attendance Failed</strong><br>
+                <small>${data.message}</small><br>
+                ${data.details ? `<small style="color:orange">${data.details}</small><br>` : ''}
+                ${data.suggestion ? `<small style="color:blue">${data.suggestion}</small>` : ''}
+            </div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result-box error">
+            ❌ <strong>Error</strong><br>
+            <small>${error.message}</small>
+        </div>`;
+            }
+        }
+
+        /* ---------------- DATA MANAGEMENT ---------------- */
+        async function loadEventRegistrations() {
+            try {
+                const res = await fetch(
+                    `${BASE_URL}/api/admin/registrations?event_id=${eventId}`,
+                    {
+                        headers: {
+                            'x-admin-token': token,
+                            'x-api-key': API_KEY
+                        }
+                    }
+                );
+
+                if (!res.ok) {
+                    throw new Error(`Failed to load registrations: ${res.status}`);
+                }
+
+                allRegistrations = await res.json();
+                displayRegistrations(allRegistrations);
+                updateStats();
+            } catch (error) {
+                console.error('Error loading registrations:', error);
+                alert('Failed to load registrations. Please try again.');
+            }
+        }
+
+        function displayRegistrations(list) {
+            if (list.length === 0) {
+                document.getElementById('registrationsContainer').innerHTML =
+                    '<div style="text-align:center; padding:40px; color:#666;">No registrations found for this event.</div>';
+                return;
+            }
+
+            let html = `<div style="overflow-x:auto;">
+        <table border="1" cellpadding="10" width="100%" style="border-collapse:collapse; font-size:14px;">
+            <thead style="background-color:#f2f2f2;">
+            <tr>
+                <th>Name</th>
+                <th>Participant ID</th>
+                <th>College</th>
+                <th>Payment</th>
+                <th>Verified</th>
+                <th>Attendance</th>
+            </tr>
+            </thead>
+            <tbody>`;
+
+            list.forEach(r => {
+                const isPresent = r.attendance_status === 'ATTENDED';
+                html += `<tr style="${isPresent ? 'background-color: #e8f5e9;' : 'background-color: #fff;'}">
+            <td><strong>${r.full_name || 'N/A'}</strong></td>
+            <td><code style="background:#f5f5f5; padding:2px 6px; border-radius:3px;">${r.participant_id || 'N/A'}</code></td>
+            <td>${r.college_name || 'N/A'}</td>
+            <td>
+                <span style="padding:2px 8px; border-radius:3px; 
+                    background-color:${r.payment_status === 'Success' ? '#d4edda' :
+                        r.payment_status === 'Pending' ? '#fff3cd' :
+                            r.payment_status === 'Failed' ? '#f8d7da' : '#f2f2f2'};">
+                    ${r.payment_status || 'N/A'}
+                </span>
+            </td>
+            <td>
+                <span style="padding:2px 8px; border-radius:3px; 
+                    background-color:${r.verification_status === 'Verified' ? '#d4edda' : '#fff3cd'};">
+                    ${r.verification_status || 'Pending'}
+                </span>
+            </td>
+            <td>
+                <strong style="color:${isPresent ? '#155724' : '#721c24'};">
+                    ${r.attendance_status || 'PENDING'}
+                </strong>
+            </td>
+        </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+            document.getElementById('registrationsContainer').innerHTML = html;
+        }
+
+        function updateStats() {
+            const total = allRegistrations.length;
+            const present = allRegistrations.filter(r => r.attendance_status === 'ATTENDED').length;
+            const absent = total - present;
+
+            document.getElementById('totalRegistered').textContent = total;
+            document.getElementById('presentCount').textContent = present;
+            document.getElementById('absentCount').textContent = absent;
+
+            const percent = total ? ((present / total) * 100).toFixed(1) : 0;
+            document.getElementById('attendancePercent').textContent = `${percent}%`;
+        }
+
+        /* ---------------- SEARCH ---------------- */
+        function filterRegistrations() {
+            const q = document.getElementById('searchBox').value.toLowerCase().trim();
+
+            if (!q) {
+                displayRegistrations(allRegistrations);
+                return;
+            }
+
+            const filtered = allRegistrations.filter(r =>
+                (r.full_name && r.full_name.toLowerCase().includes(q)) ||
+                (r.participant_id && r.participant_id.toString().includes(q)) ||
+                (r.college_name && r.college_name.toLowerCase().includes(q)) ||
+                (r.email && r.email.toLowerCase().includes(q))
+            );
+
+            displayRegistrations(filtered);
+        }
+
+        /* ---------------- UTIL ---------------- */
+        function refreshRegistrations() {
+            document.getElementById('searchBox').value = '';
+            loadEventRegistrations();
+        }
+
+        // Handle page close/refresh
+        window.addEventListener('beforeunload', () => {
+            if (scanning) {
+                stopScanner();
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
