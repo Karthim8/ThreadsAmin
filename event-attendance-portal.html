@@ -9,23 +9,34 @@
         rel="stylesheet">
     <style>
         :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text-main: #1e293b;
-            --text-dim: #64748b;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #e0e7ff;
+            --secondary: #10b981;
+            --bg: #f3f4f6;
+            --card: rgba(255, 255, 255, 0.95);
+            --text-main: #1f2937;
+            --text-dim: #6b7280;
             --success: #10b981;
             --error: #ef4444;
             --warning: #f59e0b;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
             color: var(--text-main);
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .portal-header {
@@ -33,25 +44,34 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 32px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
         }
 
         .portal-header h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.75rem;
+            font-size: 1.85rem;
             font-weight: 700;
-            color: var(--primary-dark);
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin: 0;
         }
 
         .card {
             background: var(--card);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
             margin-bottom: 24px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
         }
 
         .section {
@@ -60,13 +80,13 @@
 
         .section.active {
             display: block;
-            animation: fadeIn 0.4s ease-out;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes fadeIn {
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
 
             to {
@@ -79,158 +99,214 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .section-header h2 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.4rem;
+            color: var(--text-main);
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            outline: none;
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
         }
 
         .btn-ghost {
-            background: transparent;
-            color: var(--text-dim);
-            border: 1px solid #e2e8f0;
+            background: var(--primary-light);
+            color: var(--primary-dark);
         }
 
         .btn-ghost:hover {
-            background: #f1f5f9;
+            background: #cbd5e1;
+            color: var(--text-main);
+        }
+
+        .btn-export {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #059669;
+            transform: translateY(-2px);
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
         }
 
         .input-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            padding: 14px 18px;
+            border: 2px solid transparent;
+            background: #f9fafb;
+            border-radius: 14px;
             font-size: 1rem;
-            outline: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
         }
 
         .input-group input:focus {
+            background: white;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
         }
 
         .result-box {
-            margin-top: 16px;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            border-left: 4px solid var(--primary);
-            background: #f1f5f9;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 1rem;
+            border-left: 6px solid var(--primary);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .result-box.success {
             border-left-color: var(--success);
-            background: #ecfdf5;
         }
 
         .result-box.error {
             border-left-color: var(--error);
-            background: #fef2f2;
         }
 
         .result-box.warning {
             border-left-color: var(--warning);
-            background: #fffbeb;
         }
 
         #reader {
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            border: 2px solid #e2e8f0;
+            border: 4px solid white;
+            box-shadow: var(--shadow);
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
         }
 
         .stat-item {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: left;
+            border: 1px solid #f3f4f6;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
         }
 
         .stat-label {
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             color: var(--text-dim);
-            margin-bottom: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
         }
 
         .stat-value {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-dark);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            background: white;
         }
 
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
         }
 
         th {
-            background: #f8fafc;
-            padding: 12px 16px;
+            background: #f9fafb;
+            padding: 16px 20px;
             text-align: left;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
             color: var(--text-dim);
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #f3f4f6;
         }
 
         td {
-            padding: 16px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.875rem;
+            padding: 18px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.95rem;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
         }
 
         .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 100px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .badge-success {
@@ -247,21 +323,62 @@
             background: #fee2e2;
             color: #991b1b;
         }
+
+        .badge-attended {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        #searchBox {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        #searchBox:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <div id="portal" style="max-width: 1100px; margin: 0 auto;">
+    <div class="container">
         <div class="portal-header">
             <h1 id="eventTitle">Event Attendance Portal</h1>
-            <button class="btn btn-ghost" onclick="window.close()">Exit Portal</button>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-ghost" onclick="window.close()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                    Exit
+                </button>
+            </div>
         </div>
 
         <div class="stats card">
             <div class="section-header">
-                <h2>📊 Live Statistics</h2>
-                <div id="lastUpdated" style="font-size: 0.75rem; color: var(--text-dim);"></div>
+                <h2>📊 Live Real-time Stats</h2>
+                <div id="lastUpdated" style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;"></div>
             </div>
             <div class="stats-grid">
                 <div class="stat-item">
@@ -269,38 +386,54 @@
                     <div class="stat-value" id="totalRegistered">0</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Present</div>
+                    <div class="stat-label">✅ Verified Only</div>
+                    <div class="stat-value" id="verifiedCount" style="color: var(--secondary);">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">🔥 Present / Attended</div>
                     <div class="stat-value" id="presentCount" style="color: var(--success);">0</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Absent</div>
+                    <div class="stat-label">💤 Absent / Pending</div>
                     <div class="stat-value" id="absentCount" style="color: var(--error);">0</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Attendance Rate</div>
-                    <div class="stat-value" id="attendancePercent">0%</div>
+                    <div class="stat-label">📈 Attendance Rate</div>
+                    <div class="stat-value" id="attendancePercent" style="color: var(--primary);">0%</div>
                 </div>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
+        <div class="main-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
             <!-- QR Scanner Section -->
             <div id="qr-section" class="section active card">
                 <div class="section-header">
-                    <h2>📱 QR Scanner</h2>
-                    <button class="btn btn-ghost" onclick="switchToManual()">⌨️ Manual Entry</button>
+                    <h2>📱 Fast QR Scanner</h2>
+                    <button class="btn btn-ghost" onclick="switchToManual()">⌨️ Manual Mode</button>
                 </div>
 
-                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px;">
-                    Scan the QR code from the participant's confirmation email.
+                <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 24px;">
+                    Position the participant's QR code in front of the camera for instant verification.
                 </p>
 
                 <div id="reader"></div>
 
-                <div style="margin-top: 24px; text-align: center; display: flex; justify-content: center; gap: 12px;">
-                    <button class="btn btn-primary" onclick="startScanner()">▶ Start Scanner</button>
-                    <button class="btn btn-ghost" style="color: var(--error); border-color: #fee2e2;"
-                        onclick="stopScanner()">⏹ Stop Scanner</button>
+                <div style="margin-top: 28px; text-align: center; display: flex; justify-content: center; gap: 16px;">
+                    <button class="btn btn-primary" onclick="startScanner()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        Start
+                    </button>
+                    <button class="btn btn-ghost" style="color: var(--error); background: #fee2e2;"
+                        onclick="stopScanner()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="6" width="12" height="12" />
+                        </svg>
+                        Stop
+                    </button>
                 </div>
 
                 <div id="scanResult"></div>
@@ -309,30 +442,36 @@
             <!-- Manual Attendance Section -->
             <div id="manual-section" class="section card">
                 <div class="section-header">
-                    <h2>✏️ Manual Entry</h2>
-                    <button class="btn btn-ghost" onclick="switchToQR()">📷 QR Scanner</button>
+                    <h2>✏️ Manual Check-in</h2>
+                    <button class="btn btn-ghost" onclick="switchToQR()">📷 Scan Mode</button>
                 </div>
 
-                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px;">
-                    Enter the Participant ID to mark attendance manually.
+                <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 24px;">
+                    Fallback check-in using Participant ID if QR scan is unavailable.
                 </p>
 
                 <div class="input-group">
-                    <label>Participant ID</label>
-                    <input type="text" id="participantIdInput" placeholder="Enter ID (e.g. 1001)"
+                    <label>Unique Participant ID</label>
+                    <input type="text" id="participantIdInput" placeholder="Ex: 1024"
                         onkeypress="if(event.key === 'Enter') markManualAttendance()">
                 </div>
 
-                <button class="btn btn-primary" style="width: 100%; padding: 14px;" onclick="markManualAttendance()">
-                    Mark Attendance
+                <button class="btn btn-primary" style="width: 100%; padding: 16px; justify-content: center;"
+                    onclick="markManualAttendance()">
+                    Verify & Mark Attendance
                 </button>
 
                 <div id="manualResult"></div>
 
                 <div
-                    style="margin-top: 24px; padding: 16px; background: #fffbeb; border-radius: 12px; font-size: 0.875rem; color: #92400e;">
-                    <strong>Pro-tip:</strong> You can quickly mark attendance by typing the ID and hitting
-                    <code>Enter</code>.
+                    style="margin-top: 28px; padding: 20px; background: #eff6ff; border-radius: 16px; border: 1px dashed #bfdbfe;">
+                    <div style="display: flex; gap: 12px; align-items: start;">
+                        <span style="font-size: 1.2rem;">💡</span>
+                        <div style="font-size: 0.9rem; color: #1e40af; line-height: 1.5;">
+                            <strong>Keyboard Shortcut:</strong> Just type the ID and press <strong>Enter</strong> for
+                            rapid manual check-ins.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -340,12 +479,38 @@
         <!-- Registrations Table -->
         <div class="card" style="margin-top: 32px;">
             <div class="section-header">
-                <h2>👥 All Registrations</h2>
-                <div style="display:flex; gap: 12px;">
-                    <input id="searchBox" placeholder="Search name, ID, or college..."
-                        style="padding: 10px 16px; width: 300px; border: 1px solid #e2e8f0; border-radius: 8px;"
-                        onkeyup="filterRegistrations()">
-                    <button class="btn btn-ghost" onclick="refreshRegistrations()">🔄 Refresh</button>
+                <h2>👥 Registration Records</h2>
+                <div style="display:flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                    <div class="search-container">
+                        <input id="searchBox" placeholder="Search name, ID, or college..."
+                            onkeyup="filterRegistrations()">
+                    </div>
+                    <button class="btn btn-export" onclick="exportToCSV(false)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Export All
+                    </button>
+                    <button class="btn btn-export" style="background: var(--primary-dark);" onclick="exportToCSV(true)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Export Verified Only
+                    </button>
+                    <button class="btn btn-ghost" onclick="refreshRegistrations()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 4v6h-6M1 20v-6h6" />
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                        </svg>
+                        Sync
+                    </button>
                 </div>
             </div>
 
@@ -610,7 +775,6 @@
                     `${BASE_URL}/api/admin/registrations?event_id=${eventId}`,
                     {
                         headers: {
-                            'x-admin-token': token,
                             'x-api-key': API_KEY
                         }
                     }
@@ -632,50 +796,55 @@
         function displayRegistrations(list) {
             if (list.length === 0) {
                 document.getElementById('registrationsContainer').innerHTML =
-                    '<div style="text-align:center; padding:40px; color:#666;">No registrations found for this event.</div>';
+                    '<div style="text-align:center; padding:60px; color:var(--text-dim); font-weight:500;">No registrations found for this event.</div>';
                 return;
             }
 
-            let html = `<div style="overflow-x:auto;">
-        <table border="1" cellpadding="10" width="100%" style="border-collapse:collapse; font-size:14px;">
-            <thead style="background-color:#f2f2f2;">
-            <tr>
-                <th>Name</th>
-                <th>Participant ID</th>
-                <th>College</th>
-                <th>Payment</th>
-                <th>Verified</th>
-                <th>Attendance</th>
-            </tr>
-            </thead>
-            <tbody>`;
+            // SORT: Verified first, then by name
+            const sortedList = [...list].sort((a, b) => {
+                const aV = (a.verification_status || '').toLowerCase() === 'verified';
+                const bV = (b.verification_status || '').toLowerCase() === 'verified';
+                if (aV && !bV) return -1;
+                if (!aV && bV) return 1;
+                return (a.full_name || '').localeCompare(b.full_name || '');
+            });
 
-            list.forEach(r => {
+            let html = `<div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Participant</th>
+                            <th>ID / College</th>
+                            <th>Verification Status</th>
+                            <th>Attendance Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            sortedList.forEach(r => {
                 const isPresent = r.attendance_status === 'ATTENDED';
-                html += `<tr style="${isPresent ? 'background-color: #e8f5e9;' : 'background-color: #fff;'}">
-            <td><strong>${r.full_name || 'N/A'}</strong></td>
-            <td><code style="background:#f5f5f5; padding:2px 6px; border-radius:3px;">${r.participant_id || 'N/A'}</code></td>
-            <td>${r.college_name || 'N/A'}</td>
-            <td>
-                <span style="padding:2px 8px; border-radius:3px; 
-                    background-color:${r.payment_status === 'Success' ? '#d4edda' :
-                        r.payment_status === 'Pending' ? '#fff3cd' :
-                            r.payment_status === 'Failed' ? '#f8d7da' : '#f2f2f2'};">
-                    ${r.payment_status || 'N/A'}
-                </span>
-            </td>
-            <td>
-                <span style="padding:2px 8px; border-radius:3px; 
-                    background-color:${r.verification_status === 'Verified' ? '#d4edda' : '#fff3cd'};">
-                    ${r.verification_status || 'Pending'}
-                </span>
-            </td>
-            <td>
-                <strong style="color:${isPresent ? '#155724' : '#721c24'};">
-                    ${r.attendance_status || 'PENDING'}
-                </strong>
-            </td>
-        </tr>`;
+                const isVerified = r.verification_status === 'Verified';
+
+                html += `<tr>
+                    <td>
+                        <div style="font-weight: 700; color: var(--text-main); font-size: 1rem;">${r.full_name || 'N/A'}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-dim);">${r.email || ''}</div>
+                    </td>
+                    <td>
+                        <code style="background:var(--primary-light); color:var(--primary-dark); padding:4px 8px; border-radius:8px; font-weight:700;">#${r.participant_id || 'N/A'}</code>
+                        <div style="font-size: 0.85rem; color: var(--text-dim); margin-top: 6px;">${r.college_name || 'N/A'}</div>
+                    </td>
+                    <td>
+                        <span class="badge ${isVerified ? 'badge-success' : 'badge-pending'}">
+                            ${isVerified ? '● Verified' : '○ Pending'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge ${isPresent ? 'badge-attended' : 'badge-error'}">
+                            ${isPresent ? '✦ Present' : '○ Pending'}
+                        </span>
+                    </td>
+                </tr>`;
             });
 
             html += '</tbody></table></div>';
@@ -685,14 +854,76 @@
         function updateStats() {
             const total = allRegistrations.length;
             const present = allRegistrations.filter(r => r.attendance_status === 'ATTENDED').length;
+            const verified = allRegistrations.filter(r => (r.verification_status || '').toLowerCase() === 'verified').length;
             const absent = total - present;
 
             document.getElementById('totalRegistered').textContent = total;
             document.getElementById('presentCount').textContent = present;
+            document.getElementById('verifiedCount').textContent = verified;
             document.getElementById('absentCount').textContent = absent;
 
             const percent = total ? ((present / total) * 100).toFixed(1) : 0;
             document.getElementById('attendancePercent').textContent = `${percent}%`;
+
+            // Set last updated time
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = `Last synced: ${now.toLocaleTimeString()}`;
+        }
+
+        /* ---------------- EXPORT ---------------- */
+        function exportToCSV(onlyVerified = false) {
+            let dataToExport = [...allRegistrations];
+
+            if (onlyVerified) {
+                dataToExport = dataToExport.filter(r => (r.verification_status || '').toLowerCase() === 'verified');
+            }
+
+            if (dataToExport.length === 0) {
+                alert(onlyVerified ? "No verified registrations to export." : "No registration data available to export.");
+                return;
+            }
+
+            const eventFolderName = eventName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const suffix = onlyVerified ? '_verified_only' : '_all';
+            const filename = `${eventFolderName}_registrations${suffix}_${new Date().toISOString().split('T')[0]}.csv`;
+
+            const headers = ["Name", "Participant ID", "College", "Email", "Phone", "Payment Status", "Verification Status", "Attendance Status"];
+
+            // SORT: Verified first for export
+            const sortedForExport = dataToExport.sort((a, b) => {
+                const aV = (a.verification_status || '').toLowerCase() === 'verified';
+                const bV = (b.verification_status || '').toLowerCase() === 'verified';
+                if (aV && !bV) return -1;
+                if (!aV && bV) return 1;
+                return (a.full_name || '').localeCompare(b.full_name || '');
+            });
+
+            const rows = sortedForExport.map(r => [
+                `"${r.full_name || ''}"`,
+                `"${r.participant_id || ''}"`,
+                `"${r.college_name || ''}"`,
+                `"${r.email || ''}"`,
+                `"${r.phone_number || ''}"`,
+                `"${r.payment_status || 'N/A'}"`,
+                `"${r.verification_status || 'Pending'}"`,
+                `"${r.attendance_status || 'PENDING'}"`
+            ]);
+
+            const csvString = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blob, filename);
+            } else {
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         }
 
         /* ---------------- SEARCH ---------------- */
