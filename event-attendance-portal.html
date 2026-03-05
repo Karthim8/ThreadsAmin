@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html>
 
@@ -785,6 +787,7 @@
                 }
 
                 allRegistrations = await res.json();
+                
                 displayRegistrations(allRegistrations);
                 updateStats();
             } catch (error) {
@@ -809,6 +812,8 @@
                 return (a.full_name || '').localeCompare(b.full_name || '');
             });
 
+            console.log(`Displaying ${sortedList} registrations (Verified first)`);
+
             let html = `<div class="table-container">
                 <table>
                     <thead>
@@ -823,7 +828,7 @@
 
             sortedList.forEach(r => {
                 const isPresent = r.attendance_status === 'ATTENDED';
-                const isVerified = r.verification_status === 'Verified';
+                const isVerified = r.verified_by_admin === true;
 
                 html += `<tr>
                     <td>
@@ -836,7 +841,7 @@
                     </td>
                     <td>
                         <span class="badge ${isVerified ? 'badge-success' : 'badge-pending'}">
-                            ${isVerified ? '● Verified' : '○ Pending'}
+                            ${isVerified ? '● Verified by Admin' : '○ Pending'}
                         </span>
                     </td>
                     <td>
@@ -854,7 +859,7 @@
         function updateStats() {
             const total = allRegistrations.length;
             const present = allRegistrations.filter(r => r.attendance_status === 'ATTENDED').length;
-            const verified = allRegistrations.filter(r => (r.verification_status || '').toLowerCase() === 'verified').length;
+            const verified = allRegistrations.filter(r => r.verified_by_admin === true).length;
             const absent = total - present;
 
             document.getElementById('totalRegistered').textContent = total;
@@ -871,61 +876,60 @@
         }
 
         /* ---------------- EXPORT ---------------- */
-        function exportToCSV(onlyVerified = false) {
-            let dataToExport = [...allRegistrations];
+function exportToCSV(onlyVerified = false) {
+    let dataToExport = [...allRegistrations];
 
-            if (onlyVerified) {
-                dataToExport = dataToExport.filter(r => (r.verification_status || '').toLowerCase() === 'verified');
-            }
+    if (onlyVerified) {
+        dataToExport = dataToExport.filter(r => r.verified_by_admin === true);
+    }
 
-            if (dataToExport.length === 0) {
-                alert(onlyVerified ? "No verified registrations to export." : "No registration data available to export.");
-                return;
-            }
+    if (dataToExport.length === 0) {
+        alert(onlyVerified ? "No verified registrations to export." : "No registration data available to export.");
+        return;
+    }
 
-            const eventFolderName = eventName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            const suffix = onlyVerified ? '_verified_only' : '_all';
-            const filename = `${eventFolderName}_registrations${suffix}_${new Date().toISOString().split('T')[0]}.csv`;
+    const eventFolderName = eventName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const suffix = onlyVerified ? '_verified_only' : '_all';
+    const filename = `${eventFolderName}_registrations${suffix}_${new Date().toISOString().split('T')[0]}.csv`;
 
-            const headers = ["Name", "Participant ID", "College", "Email", "Phone", "Payment Status", "Verification Status", "Attendance Status"];
+    const headers = ["Name", "Participant ID", "College", "Email", "Phone", "Payment Status", "Verification Status", "Attendance Status"];
 
-            // SORT: Verified first for export
-            const sortedForExport = dataToExport.sort((a, b) => {
-                const aV = (a.verification_status || '').toLowerCase() === 'verified';
-                const bV = (b.verification_status || '').toLowerCase() === 'verified';
-                if (aV && !bV) return -1;
-                if (!aV && bV) return 1;
-                return (a.full_name || '').localeCompare(b.full_name || '');
-            });
+    // SORT: Verified first for export
+    const sortedForExport = dataToExport.sort((a, b) => {
+        const aV = a.verified_by_admin === true;
+        const bV = b.verified_by_admin === true;
+        if (aV && !bV) return -1;
+        if (!aV && bV) return 1;
+        return (a.full_name || '').localeCompare(b.full_name || '');
+    });
 
-            const rows = sortedForExport.map(r => [
-                `"${r.full_name || ''}"`,
-                `"${r.participant_id || ''}"`,
-                `"${r.college_name || ''}"`,
-                `"${r.email || ''}"`,
-                `"${r.phone_number || ''}"`,
-                `"${r.payment_status || 'N/A'}"`,
-                `"${r.verification_status || 'Pending'}"`,
-                `"${r.attendance_status || 'PENDING'}"`
-            ]);
+    const rows = sortedForExport.map(r => [
+        `"${r.full_name || ''}"`,
+        `"${r.participant_id || ''}"`,
+        `"${r.college_name || ''}"`,
+        `"${r.email || ''}"`,
+        `"${r.phone_number || ''}"`,
+        `"${r.payment_status || 'N/A'}"`,
+        `"${r.verified_by_admin === true ? 'Verified' : 'Pending'}"`,
+        `"${r.attendance_status || 'PENDING'}"`
+    ]);
 
-            const csvString = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const csvString = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
 
-            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-                window.navigator.msSaveOrOpenBlob(blob, filename);
-            } else {
-                const link = document.createElement("a");
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", filename);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
         /* ---------------- SEARCH ---------------- */
         function filterRegistrations() {
             const q = document.getElementById('searchBox').value.toLowerCase().trim();
